@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS Habitat (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    tipo TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Animal (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    especie TEXT NOT NULL,
+    idade INTEGER,
+    habitat_id INTEGER,
+    FOREIGN KEY (habitat_id) REFERENCES Habitat(id)
+);
+
+CREATE TABLE IF NOT EXISTS Cuidador (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    animal_id INTEGER,
+    FOREIGN KEY (animal_id) REFERENCES Animal(id)
+);
