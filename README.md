@@ -40,5 +40,5 @@ Certifique-se de ter o Python e o SQLite instalados em seu sistema. O sistema us
 1. **Clone o repositório**:
 
    ```bash
-   git clone https://github.com/seu-usuario/zoologico.git
-   cd zoologico
+   git clone https://github.com/ValeriaSilvaSantos1/ProjetoBD1
+   cd ProjetoBD1
