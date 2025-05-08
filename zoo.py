@@ -32,3 +32,57 @@ cursor.execute("INSERT INTO Cuidador (nome, animal_id) VALUES ('Marcos Ribeiro',
 
 conn.commit()
 conn.close()
+
+#Lista de todos os animais com seu habitat.
+def consultar_animais ():
+    cursor.execute('''
+SELECT a.nome AS animal, a.especie, h.nome AS habitat, h.tipo
+FROM Animal a
+JOIN Habitat h ON a.habitat_id = h.id
+''')
+    for row in cursor.fetchall():
+         print(row)
+
+#Lista de todos os cuidadores e os animais que cuidam.
+def cuidadores_animais ():
+    cursor.execute('''
+SELECT c.nome AS cuidador, a.nome AS animal, a.especie
+FROM Cuidador c
+JOIN Animal a ON c.animal_id = a.id;
+''')
+    for row in cursor.fetchall():
+        print(row)
+                   
+#Mostrar todos os habitats e quantos animais vivem em cada.
+def habitats_animais ():
+    cursor.execute('''
+SELECT h.nome AS habitat, COUNT(a.id) AS total_animais
+FROM Habitat h
+LEFT JOIN Animal a ON a.habitat_id = h.id
+GROUP BY h.id;
+''')
+    for row in cursor.fetchall():
+        print(row)
+
+#Quantidade de animais por habitat.
+def animais_habitat ():
+    cursor.execute('''
+SELECT h.tipo, COUNT(a.id) AS total_animais
+FROM Habitat h
+LEFT JOIN Animal a ON a.habitat_id = h.id
+GROUP BY h.tipo;
+''')
+    for row in cursor.fetchall():
+        print(row)
+
+
+#Habitat vazios (verificação desses).
+def habitats_vazios ():
+    cursor.execute('''
+SELECT h.nome AS habitat
+FROM Habitat h
+LEFT JOIN Animal a ON a.habitat_id = h.id
+WHERE a.id IS NULL;
+''')
+    for row in cursor.fetchall():
+        print(row)
