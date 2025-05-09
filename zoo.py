@@ -1,4 +1,5 @@
 import sqlite3
+from tabulate import tabulate
 
 conn = sqlite3.connect('zoo.db')
 cursor = conn.cursor()
@@ -39,47 +40,62 @@ if total_animais == 0:
 
     conn.commit()
 
-#Lista de todos os animais com seu habitat.
-def consultar_animais ():
+#Lista de todos os animais.
+def consultar_animais():
     cursor.execute('''
-SELECT a.nome AS animal, a.especie, h.nome AS habitat, h.tipo
-FROM Animal a
-JOIN Habitat h ON a.habitat_id = h.id
-''')
-    for row in cursor.fetchall():
-         print(row)
+    SELECT a.nome AS animal, a.especie
+    FROM Animal a
+    ''')
+    results = cursor.fetchall()
+    headers = ["Animal", "Espécie"]
+    print(tabulate(results, headers, tablefmt="fancy_grid"))
 
-#Lista de todos os cuidadores e os animais que cuidam.
-def cuidadores_animais ():
+
+# Lista de todos os cuidadores e os animais que cuidam.
+def cuidadores_animais():
     cursor.execute('''
-SELECT c.nome AS cuidador, a.nome AS animal, a.especie
-FROM Cuidador c
-JOIN Animal a ON c.animal_id = a.id;
-''')
-    for row in cursor.fetchall():
-        print(row)
+    SELECT c.nome AS cuidador, a.nome AS animal, a.especie
+    FROM Cuidador c
+    JOIN Animal a ON c.animal_id = a.id;
+    ''')
+    results = cursor.fetchall()
+    headers = ["Cuidador", "Animal", "Espécie"]
+    print(tabulate(results, headers, tablefmt="fancy_grid"))
                    
 #Mostrar todos os habitats e quantos animais vivem em cada.
-def habitats_animais ():
+def habitats_animais():
     cursor.execute('''
-SELECT h.nome AS habitat, COUNT(a.id) AS total_animais
-FROM Habitat h
-LEFT JOIN Animal a ON a.habitat_id = h.id
-GROUP BY h.id;
-''')
-    for row in cursor.fetchall():
-        print(row)
+    SELECT h.nome AS habitat, COUNT(a.id) AS total_animais
+    FROM Habitat h
+    LEFT JOIN Animal a ON a.habitat_id = h.id
+    GROUP BY h.id;
+    ''')
+    results = cursor.fetchall()
+    headers = ["Habitat", "Total de Animais"]
+    print(tabulate(results, headers, tablefmt="fancy_grid"))
 
-#Quantidade de animais por habitat.
-def animais_habitat ():
+#Cuidadores sem animal associado.
+def cuidadores_sem_animal():
     cursor.execute('''
-SELECT h.tipo, COUNT(a.id) AS total_animais
-FROM Habitat h
-LEFT JOIN Animal a ON a.habitat_id = h.id
-GROUP BY h.tipo;
-''')
-    for row in cursor.fetchall():
-        print(row)
+    SELECT nome
+    FROM Cuidador
+    WHERE animal_id IS NULL;
+    ''')
+    results = cursor.fetchall()
+    headers = ["Cuidador sem Animal"]
+    print(tabulate(results, headers, tablefmt="fancy_grid"))
+
+#Total de animais por tipo de habitat.
+def total_animais_por_tipo_habitat():
+    cursor.execute('''
+    SELECT h.tipo AS tipo_habitat, COUNT(a.id) AS total_animais
+    FROM Habitat h
+    LEFT JOIN Animal a ON a.habitat_id = h.id
+    GROUP BY h.tipo;
+    ''')
+    results = cursor.fetchall()
+    headers = ["Tipo de Habitat", "Total de Animais"]
+    print(tabulate(results, headers, tablefmt="fancy_grid"))
 
 
 def menu():
@@ -89,7 +105,8 @@ def menu():
         print("1. Consultar animais")
         print("2. Ver cuidadores e animais")
         print("3. Ver habitats e seus animais")
-        print("4. Ver animais de um habitat")
+        print("4. Cuidadores sem animal associado")
+        print("5. Total de animais por tipo de habitat")
         print("0. Sair")
         print("--------------------------")
 
@@ -102,7 +119,9 @@ def menu():
         elif opcao == "3":
             habitats_animais()
         elif opcao == "4":
-            animais_habitat()
+            cuidadores_sem_animal()
+        elif opcao == "5":
+            total_animais_por_tipo_habitat()
         elif opcao == "0":
             print("Saindo...")
             break
